@@ -23,8 +23,10 @@ int main(int ac, char **av)
 	data.av = av;
 	data.rhost = av[1];
 	data.ttl = 1;
+	data.seq = 1;
 	if (!init_socket(&data))
 		return (2);
-	
+	printf("traceroute to %s (%s)\n", data.rhost, data.rp);
+	do_traceroute(&data);
 	return (0);
 }

@@ -1,5 +1,8 @@
 SRC_NAME = main.c \
-			init.c
+			init.c \
+			network.c \
+			analysis.c \
+			debug.c
 
 OBJ_PATH = ./obj/
 
