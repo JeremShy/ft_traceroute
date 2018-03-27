@@ -78,4 +78,5 @@ int init_socket(t_data *data)
 		return (0);
 	if (data->probe_type == PROBE_TYPE_UDP)
 		return (init_udp_socket(data));
+	return (1);
 }

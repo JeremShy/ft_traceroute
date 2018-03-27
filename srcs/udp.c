@@ -18,8 +18,4 @@ void	send_udp_packet(t_data *data, uint8_t ttl)
 	{
 		dprintf(2, "Write error.\n");
 	}
-	// if (write(data->sock, dgram, sizeof(dgram)) != sizeof(dgram))
-	// {
-	// 	dprintf(2, "Write error.\n");
-	// }
 }

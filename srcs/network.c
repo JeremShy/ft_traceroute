@@ -23,7 +23,7 @@ uint16_t checksum(void *dgram, size_t size)
 void	receive_icmp_packet(t_data *data)
 {
 	struct msghdr msghdr;
-	char buffer[200];
+	char buffer[1024];
 	struct timeval recvtime;
 	struct iovec iov;
 
@@ -45,7 +45,7 @@ void	receive_icmp_packet(t_data *data)
 	}
 	gettimeofday(&recvtime, NULL);
 	buffer[r] = 0;
-	if (!analyse_received_packet(data, buffer, r))
+	if (!analyse_received_packet(data, buffer, r, recvtime))
 	{
 		exit(0);
 	}
@@ -69,11 +69,13 @@ void	do_traceroute(t_data *data)
 	tv.tv_usec = 50000;
 	setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
-	ttl = 30;
-	while (ttl <= 30)
+	ttl = 1;
+	// while (ttl <= data->max_hops)
+	while (ttl <= 2)
 	{
 		i = 0;
-		while (i < 3)
+		// while (i < data->probes_per_hops)
+		while (i < 1)
 		{
 			probe(data, ttl);
 			receive_icmp_packet(data);
