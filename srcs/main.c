@@ -92,5 +92,3 @@ int main(int ac, char **av)
 	do_traceroute(&data);
 	return (0);
 }
-
-NULL
