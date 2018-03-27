@@ -39,7 +39,8 @@ int		init_socket(t_data *data);
 void	do_traceroute(t_data *data);
 uint16_t checksum(void *dgram, size_t size);
 
-int	analyse_received_packet(t_data *data, char *buffer, size_t size, struct timeval recvtime);
+int		analyse_icmp_received_packet(t_data *data, char *buffer, size_t size, struct timeval recvtime);
+int		analyse_udp_received_packet(t_data *data, char *buffer, size_t size, struct timeval recvtime);
 
 void	print_memory(char *start, size_t size);
 void	print_icmp_hdr(struct icmphdr *hdr);

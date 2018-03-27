@@ -45,9 +45,15 @@ void	receive_icmp_packet(t_data *data)
 	}
 	gettimeofday(&recvtime, NULL);
 	buffer[r] = 0;
-	if (!analyse_received_packet(data, buffer, r, recvtime))
+	if (data->probe_type == PROBE_TYPE_UDP)
 	{
-		exit(0);
+		if (!analyse_udp_received_packet(data, buffer, r, recvtime))
+			exit(0);
+	}
+	else if (data->probe_type == PROBE_TYPE_ICMP)
+	{
+		if (!analyse_icmp_received_packet(data, buffer, r, recvtime))
+			exit(0);
 	}
 }
 
@@ -70,12 +76,12 @@ void	do_traceroute(t_data *data)
 	setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
 	ttl = 1;
-	// while (ttl <= data->max_hops)
-	while (ttl <= 2)
+	while (ttl <= data->max_hops)
+	// while (ttl <= 2)
 	{
 		i = 0;
-		// while (i < data->probes_per_hops)
-		while (i < 1)
+		while (i < data->probes_per_hops)
+		// while (i < 1)
 		{
 			probe(data, ttl);
 			receive_icmp_packet(data);

@@ -77,7 +77,7 @@ int main(int ac, char **av)
 	data.pid = getpid();
 	data.av = av;
 	data.ttl = 1;
-	data.seq = 1;
+	data.seq = 0;
 	data.probes_per_hops = 3;
 	data.max_hops = 30;
 	if ((data.array = malloc(sizeof(int8_t) * data.probes_per_hops * data.max_hops)) == 0)

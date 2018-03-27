@@ -1,7 +1,6 @@
 SRC_NAME = main.c \
 			init.c \
 			network.c \
-			analysis.c \
 			debug.c \
 			icmp.c \
 			udp.c
