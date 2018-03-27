@@ -1,6 +1,6 @@
 #include <ft_traceroute.h>
 
-static uint16_t checksum(void *dgram, size_t size)
+uint16_t checksum(void *dgram, size_t size)
 {
 	uint16_t *tmp;
 	size_t sum;
@@ -26,7 +26,6 @@ void	receive_icmp_packet(t_data *data)
 	char buffer[200];
 	struct timeval recvtime;
 	struct iovec iov;
-	int		analysis;
 
 	ft_bzero(buffer, sizeof(buffer));
 	ft_bzero(&msghdr, sizeof(msghdr));
@@ -38,15 +37,13 @@ void	receive_icmp_packet(t_data *data)
 	msghdr.msg_iov = &iov;
 	msghdr.msg_iovlen = 1;
 
-	// printf("Waiting for a message...\n");
-	int r = recvmsg(data->sock, &msghdr, 0);
+	int r = recvmsg(data->recv_sock, &msghdr, 0);
 	if (r == -1)
 	{
 		printf("*\n");
 		return ;
 	}
 	gettimeofday(&recvtime, NULL);
-	// printf("Message received !\n");
 	buffer[r] = 0;
 	if (!analyse_received_packet(data, buffer, r))
 	{
@@ -54,48 +51,34 @@ void	receive_icmp_packet(t_data *data)
 	}
 }
 
-void	send_icmp_packet(t_data *data, uint8_t	ttl)
+static void	probe(t_data *data, int ttl)
 {
-	char			dgram[32];
-	struct icmphdr	*icmp_header;
-	struct timeval	*tv;
-	uint16_t		*seq;
-
-	setsockopt(data->sock, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl));
-	ft_bzero(dgram, sizeof(dgram));
-	icmp_header = (void*)dgram;
-	seq = (void*)dgram + sizeof(struct icmphdr);
-	tv = (void*)dgram + sizeof(struct icmphdr) + sizeof(uint16_t);
-
-	icmp_header->type = ICMP_ECHO;
-	icmp_header->code = 0;
-	icmp_header->un.echo.id = htons(data->pid);
-	icmp_header->un.echo.sequence = htons(data->seq);
-	*seq = (uint16_t)data->seq;
-	gettimeofday(tv, NULL);
-	data->seq++;
-	icmp_header->checksum = checksum(dgram, sizeof(dgram));
-	sendto(data->sock, dgram, sizeof(dgram), 0, data->res->ai_addr, data->res->ai_addrlen);
+	if (data->probe_type == PROBE_TYPE_ICMP)
+		send_icmp_packet(data, ttl);
+	else if (data->probe_type == PROBE_TYPE_UDP)
+		send_udp_packet(data, ttl);
 }
 
 void	do_traceroute(t_data *data)
 {
 	int	ttl;
+	int	i;
 
 	struct timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = 50000;
-	setsockopt(data->sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+	setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
-	ttl = 1;
+	ttl = 30;
 	while (ttl <= 30)
 	{
-		send_icmp_packet(data, ttl);
-		// send_icmp_packet(data, ttl);
-		// send_icmp_packet(data, ttl);
-		receive_icmp_packet(data);
-		// receive_icmp_packet(data);
-		// receive_icmp_packet(data);
+		i = 0;
+		while (i < 3)
+		{
+			probe(data, ttl);
+			receive_icmp_packet(data);
+			i++;
+		}
 		ttl++;
 	}
 }

@@ -2,7 +2,9 @@ SRC_NAME = main.c \
 			init.c \
 			network.c \
 			analysis.c \
-			debug.c
+			debug.c \
+			icmp.c \
+			udp.c
 
 OBJ_PATH = ./obj/
 

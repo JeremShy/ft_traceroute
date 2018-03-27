@@ -5,23 +5,77 @@ void	print_usage(char *av)
 		dprintf(2, "Usage :\n\t%s [-h]\n\t%s destination\n", av, av);	
 }
 
+int8_t	analyse_specific_av(t_data *data, int i, int ac, char **av)
+{
+	(void)ac; //Left for possible later use.
+	int	j;
+
+	j = 1;
+	while (av[i][j])
+	{
+		if (av[i][j] == 'I')
+		{
+			printf("The scan wille be in icmp.\n");
+			data->probe_type = PROBE_TYPE_ICMP;
+		}
+		else if (av[i][j] == 'h')
+			return (-1);
+		else
+		{
+			dprintf(2, "%s: Unknown option `%c'\n", av[0], av[i][j]);
+			return (0);
+		}
+		j++;
+	}
+	return (1);
+}
+
+int8_t	parse_av(t_data *data, int ac, char **av)
+{
+	int	i;
+	int	ret;
+
+	i = 1;
+	while (i < ac && av[i][0] == '-' && ft_strcmp(av[i], "--") != 0)
+	{
+		ret = analyse_specific_av(data, i, ac, av);
+		if (ret == 0 || ret == -1)
+			return (ret);
+		i++;
+	}
+	if (i < ac && ft_strcmp(av[i], "--") == 0)
+		i++;
+	if (i >= ac)
+	{
+		dprintf(2, "Error: %s: Please enter a host.\n", av[0]);
+		return (0);
+	}
+	data->rhost = av[i];
+	return (1);
+}
+
 int main(int ac, char **av)
 {
 	t_data	data;
+	int		ret;
 
-	if (ac == 1 || ft_strcmp(av[1], "-h") == 0)
+	data.probe_type = PROBE_TYPE_DEFAULT;
+	ret = parse_av(&data, ac, av);
+	if (ret == -1)
 	{
 		print_usage(av[0]);
 		return (0);
 	}
+	else if (ret == 0)
+		return (3);
 	if (getuid() != 0)
 	{
 		dprintf(2, "%s: You need to be root in order to use this program.\n", av[0]);
 		return (1);
 	}
+	printf("Protocol : %d\n", data.probe_type);
 	data.pid = getpid();
 	data.av = av;
-	data.rhost = av[1];
 	data.ttl = 1;
 	data.seq = 1;
 	if (!init_socket(&data))
