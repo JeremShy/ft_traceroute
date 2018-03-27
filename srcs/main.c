@@ -80,15 +80,17 @@ int main(int ac, char **av)
 	data.seq = 0;
 	data.probes_per_hops = 3;
 	data.max_hops = 30;
-	if ((data.array = malloc(sizeof(int8_t) * data.probes_per_hops * data.max_hops)) == 0)
+	if ((data.array = malloc(sizeof(struct timeval) * data.probes_per_hops * data.max_hops)) == 0)
 	{
 		printf("Error while trying to allocate room for an array.\n");
 		return (3);
 	}
-	ft_bzero(data.array, sizeof(int8_t) * data.probes_per_hops * data.max_hops);
+	ft_bzero(data.array, sizeof(struct timeval) * data.probes_per_hops * data.max_hops);
 	if (!init_socket(&data))
 		return (4);
 	printf("traceroute to %s (%s)\n", data.rhost, data.rp);
 	do_traceroute(&data);
 	return (0);
 }
+
+NULL

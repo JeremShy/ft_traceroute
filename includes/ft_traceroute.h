@@ -31,7 +31,7 @@ typedef struct	s_data
 	int8_t			probe_type;
 	int8_t			probes_per_hops;
 	int8_t			max_hops;
-	int8_t			*array;
+	struct timeval	*array;
 }				t_data;
 
 int		init_socket(t_data *data);
