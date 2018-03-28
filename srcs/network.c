@@ -72,14 +72,8 @@ void	do_traceroute(t_data *data)
 	struct timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = 100000;
-	if (setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval)) == -1)
-	{
-		perror("");
-	}
-	if (setsockopt(data->sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval)) == -1)
-	{
-		perror("");
-	}
+	setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval));
+	setsockopt(data->sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval));
 
 	while (data->ttl <= data->max_hops)
 	{

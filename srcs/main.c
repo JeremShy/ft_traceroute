@@ -2,7 +2,7 @@
 
 void	print_usage(char *av)
 {
-		dprintf(2, "Usage :\n\t%s [-h]\n\t%s [-m max_hops] [-q nqueries] [-f first_ttl] destination\n", av, av);	
+		dprintf(2, "Usage :\n\t%s [-h]\n\t%s [-m max_hops] [-q nqueries] [-f first_ttl] [-I | -Q] destination\n", av, av);	
 }
 
 int		get_nbr(int *i, int ac, char **av, int *j, int *error)
@@ -46,22 +46,15 @@ int8_t	analyse_specific_av(t_data *data, int *i, int ac, char **av)
 	while (av[*i][j])
 	{
 		if (av[*i][j] == 'I')
-		{
-			// printf("The scan wille be in icmp.\n");
 			data->probe_type = PROBE_TYPE_ICMP;
-		}
 		else if (av[*i][j] == 'U')
-		{
-			// printf("The scan wille be in udp.\n");
 			data->probe_type = PROBE_TYPE_UDP;
-		}
 		else if (av[*i][j] == 'm')
 		{
 			error = 0;
 			data->max_hops = get_nbr(i, ac, av, &j, &error);
-			if (error)
+			if (error || data->max_hops <= 0)
 				return (-1);
-			// printf("Max hops : %d\n", data->max_hops);
 			(*i)--;
 			return (1);
 		}
@@ -69,9 +62,8 @@ int8_t	analyse_specific_av(t_data *data, int *i, int ac, char **av)
 		{
 			error = 0;
 			data->probes_per_hops = get_nbr(i, ac, av, &j, &error);
-			if (error)
+			if (error || data->probes_per_hops <= 0)
 				return (-1);
-			// printf("Max hops : %d\n", data->probes_per_hops);
 			(*i)--;
 			return (1);
 		}
@@ -79,9 +71,8 @@ int8_t	analyse_specific_av(t_data *data, int *i, int ac, char **av)
 		{
 			error = 0;
 			data->ttl = get_nbr(i, ac, av, &j, &error);
-			if (error)
+			if (error || data->ttl <= 0)
 				return (-1);
-			// printf("Max hops : %d\n", data->ttl);
 			(*i)--;
 			return (1);
 		}
