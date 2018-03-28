@@ -2,32 +2,94 @@
 
 void	print_usage(char *av)
 {
-		dprintf(2, "Usage :\n\t%s [-h]\n\t%s destination\n", av, av);	
+		dprintf(2, "Usage :\n\t%s [-h]\n\t%s [-m max_hops] [-q nqueries] [-f first_ttl] destination\n", av, av);	
 }
 
-int8_t	analyse_specific_av(t_data *data, int i, int ac, char **av)
+int		get_nbr(int *i, int ac, char **av, int *j, int *error)
+{
+	int	ret;
+
+	ret = 0;
+	if (av[*i][*j + 1] != '\0')
+	{
+		if (ft_isdigit(av[*i][*j + 1]))
+			ret = ft_atoi(&av[*i][*j + 1]);
+		else
+			*error = 1;
+		(*i)++;
+		*j = 0;
+		return (ret);
+	}
+	if (*i == ac - 1)
+	{
+		*error = 1;
+		return (0);
+	}
+	(*i)++;
+	*j = 0;
+	if (ft_isdigit(av[*i][*j]))
+		ret = ft_atoi(&av[*i][*j]);
+	else
+		*error = 1;
+	(*i)++;
+	*j = 0;
+	return (ret);
+}
+
+int8_t	analyse_specific_av(t_data *data, int *i, int ac, char **av)
 {
 	(void)ac; //Left for possible later use.
 	int	j;
+	int	error;
 
 	j = 1;
-	while (av[i][j])
+	while (av[*i][j])
 	{
-		if (av[i][j] == 'I')
+		if (av[*i][j] == 'I')
 		{
-			printf("The scan wille be in icmp.\n");
+			// printf("The scan wille be in icmp.\n");
 			data->probe_type = PROBE_TYPE_ICMP;
 		}
-		else if (av[i][j] == 'U')
+		else if (av[*i][j] == 'U')
 		{
-			printf("The scan wille be in udp.\n");
+			// printf("The scan wille be in udp.\n");
 			data->probe_type = PROBE_TYPE_UDP;
 		}
-		else if (av[i][j] == 'h')
+		else if (av[*i][j] == 'm')
+		{
+			error = 0;
+			data->max_hops = get_nbr(i, ac, av, &j, &error);
+			if (error)
+				return (-1);
+			// printf("Max hops : %d\n", data->max_hops);
+			(*i)--;
+			return (1);
+		}
+		else if (av[*i][j] == 'q')
+		{
+			error = 0;
+			data->probes_per_hops = get_nbr(i, ac, av, &j, &error);
+			if (error)
+				return (-1);
+			// printf("Max hops : %d\n", data->probes_per_hops);
+			(*i)--;
+			return (1);
+		}
+		else if (av[*i][j] == 'f')
+		{
+			error = 0;
+			data->ttl = get_nbr(i, ac, av, &j, &error);
+			if (error)
+				return (-1);
+			// printf("Max hops : %d\n", data->ttl);
+			(*i)--;
+			return (1);
+		}
+		else if (av[*i][j] == 'h')
 			return (-1);
 		else
 		{
-			dprintf(2, "%s: Unknown option `%c'\n", av[0], av[i][j]);
+			dprintf(2, "%s: Unknown option `%c'\n", av[0], av[*i][j]);
 			return (0);
 		}
 		j++;
@@ -43,7 +105,7 @@ int8_t	parse_av(t_data *data, int ac, char **av)
 	i = 1;
 	while (i < ac && av[i][0] == '-' && ft_strcmp(av[i], "--") != 0)
 	{
-		ret = analyse_specific_av(data, i, ac, av);
+		ret = analyse_specific_av(data, &i, ac, av);
 		if (ret == 0 || ret == -1)
 			return (ret);
 		i++;

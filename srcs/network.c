@@ -67,7 +67,6 @@ static void	probe(t_data *data, int ttl)
 
 void	do_traceroute(t_data *data)
 {
-	int	ttl;
 	int	i;
 
 	struct timeval tv;
@@ -82,22 +81,21 @@ void	do_traceroute(t_data *data)
 		perror("");
 	}
 
-	ttl = 1;
-	while (ttl <= data->max_hops)
+	while (data->ttl <= data->max_hops)
 	{
 		i = 0;
 		while (i < data->probes_per_hops)
 		{
-			probe(data, ttl);
+			probe(data, data->ttl);
 			receive_icmp_packet(data);
 			i++;
 		}
-		print_time_list(data, data->list, ttl);
+		print_time_list(data, data->list, data->ttl);
 		free_tl(data->list);
 		if (data->must_stop)
 			return ;
 		data->list = NULL;
 		ft_bzero(data->actual_dst, sizeof(data->actual_dst));
-		ttl++;
+		(data->ttl)++;
 	}
 }

@@ -42,9 +42,6 @@ int	analyse_udp_received_packet(t_data *data, char *buffer, size_t size, struct 
 	if (seq >= data->max_hops * data->probes_per_hops)
 		return (0);
 	rtt = (recvtime.tv_sec - data->array[seq].tv_sec) * 1000 + ((recvtime.tv_usec / 1000.0f) - (data->array[seq].tv_usec / 1000.0f));
-	
-	if (rtt < 0)
-		exit(0);
 	add_tl(&(data->list), create_tl(rtt, 0));
 	return (1);
 }

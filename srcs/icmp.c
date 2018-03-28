@@ -28,23 +28,27 @@ int	analyse_icmp_received_packet(t_data *data, char *buffer, size_t size, struct
 	int				seq;
 	float			rtt;
 
+
 	ip_header = (void*)buffer;
 	icmp_header = (void*)buffer + ip_header->ihl * 4;
 	if ((void*)icmp_header > (void*)buffer + size)
 		return (0);
-
 	source.s_addr = ip_header->saddr;
 	char *ptr = inet_ntoa(source);
 	ft_strncpy(data->actual_dst, ptr, 20);
-	if (icmp_header->type == 0 || (icmp_header->type == 3 && icmp_header->type == 3) )
+	if (icmp_header->type == 0 || (icmp_header->type == 3 && icmp_header->type == 3))
+	{
 		data->must_stop = 1;
-	other_icmp_hdr = (void*)buffer +  ip_header->ihl * 4 + 8 + 20;
+		other_icmp_hdr = icmp_header;
+	}
+	else
+		other_icmp_hdr = (void*)buffer +  ip_header->ihl * 4 + 8 + 20;
 	if ((void*)other_icmp_hdr > (void*)buffer + size)
 		return (0);
 	seq = ntohs(other_icmp_hdr->un.echo.sequence);
 	if (seq >= data->max_hops * data->probes_per_hops)
 		return (0);
-	rtt = (recvtime.tv_sec - data->array[seq].tv_sec) + recvtime.tv_usec / 1000.0 - data->array[seq].tv_usec / 1000.0;
+	rtt = (recvtime.tv_sec - data->array[seq].tv_sec) * 1000 + ((recvtime.tv_usec / 1000.0f) - (data->array[seq].tv_usec / 1000.0f));
 	add_tl(&(data->list), create_tl(rtt, 0));
 	return (1);
 }
