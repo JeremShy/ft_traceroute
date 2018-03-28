@@ -18,6 +18,11 @@ int8_t	analyse_specific_av(t_data *data, int i, int ac, char **av)
 			printf("The scan wille be in icmp.\n");
 			data->probe_type = PROBE_TYPE_ICMP;
 		}
+		else if (av[i][j] == 'U')
+		{
+			printf("The scan wille be in udp.\n");
+			data->probe_type = PROBE_TYPE_UDP;
+		}
 		else if (av[i][j] == 'h')
 			return (-1);
 		else
