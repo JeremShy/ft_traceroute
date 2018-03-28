@@ -60,6 +60,9 @@ int main(int ac, char **av)
 	int		ret;
 
 	data.probe_type = PROBE_TYPE_DEFAULT;
+	data.probes_per_hops = 3;
+	data.max_hops = 30;
+	data.ttl = 1;
 	ret = parse_av(&data, ac, av);
 	if (ret == -1)
 	{
@@ -75,10 +78,7 @@ int main(int ac, char **av)
 	}
 	data.pid = getpid();
 	data.av = av;
-	data.ttl = 1;
 	data.seq = 0;
-	data.probes_per_hops = 3;
-	data.max_hops = 30;
 	data.list = NULL;
 	data.must_stop = 0;
 	ft_bzero(data.actual_dst, sizeof(data.actual_dst));
