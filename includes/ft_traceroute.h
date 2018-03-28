@@ -40,6 +40,7 @@ typedef struct	s_data
 	int8_t			max_hops;
 	struct timeval	*array;
 	t_time_list		*list;
+	int8_t			must_stop;
 }				t_data;
 
 int		init_socket(t_data *data);

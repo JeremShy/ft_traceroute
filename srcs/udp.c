@@ -21,7 +21,7 @@ int	analyse_udp_received_packet(t_data *data, char *buffer, size_t size, struct 
 {
 	struct icmphdr	*icmp_header;
 	struct iphdr	*ip_header;
-	uint32_t		source;
+	struct in_addr		source;
 	uint16_t		*seq_ptr;
 	uint16_t		seq;
 	float	rtt;
@@ -30,20 +30,21 @@ int	analyse_udp_received_packet(t_data *data, char *buffer, size_t size, struct 
 	icmp_header = (void*)buffer + ip_header->ihl * 4;
 	if ((void*)icmp_header > (void*)buffer + size)
 		return (0);
-
-	source = ip_header->saddr;
-	inet_ntop(AF_INET, &source, data->actual_dst, 20);
-	// printf("data->actual_dst : %s\n", data->actual_dst);
+	source.s_addr = ip_header->saddr;
+	char *ptr = inet_ntoa(source);
+	ft_strncpy(data->actual_dst, ptr, 20);
 	if (icmp_header->type == 0 || (icmp_header->type == 3 && icmp_header->type == 3) )
-		return (0);
+		data->must_stop = 1;
 	seq_ptr = (void*)buffer +  ip_header->ihl * 4 + 8 + 20 + 2;
 	if ((void*)seq_ptr > (void*)buffer + size)
 		return (0);
 	seq = ntohs(*seq_ptr) - 33434;
 	if (seq >= data->max_hops * data->probes_per_hops)
 		return (0);
-	rtt = (recvtime.tv_sec - data->array[seq].tv_sec) + recvtime.tv_usec / 1000.0 - data->array[seq].tv_usec / 1000.0;
-	// printf("rtt : %f\n", rtt);
+	rtt = (recvtime.tv_sec - data->array[seq].tv_sec) * 1000 + ((recvtime.tv_usec / 1000.0f) - (data->array[seq].tv_usec / 1000.0f));
+	
+	if (rtt < 0)
+		exit(0);
 	add_tl(&(data->list), create_tl(rtt, 0));
 	return (1);
 }

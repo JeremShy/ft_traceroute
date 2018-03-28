@@ -72,7 +72,7 @@ void	do_traceroute(t_data *data)
 
 	struct timeval tv;
 	tv.tv_sec = 0;
-	tv.tv_usec = 50000;
+	tv.tv_usec = 100000;
 	if (setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval)) == -1)
 	{
 		perror("");
@@ -94,6 +94,8 @@ void	do_traceroute(t_data *data)
 		}
 		print_time_list(data, data->list, ttl);
 		free_tl(data->list);
+		if (data->must_stop)
+			return ;
 		data->list = NULL;
 		ft_bzero(data->actual_dst, sizeof(data->actual_dst));
 		ttl++;

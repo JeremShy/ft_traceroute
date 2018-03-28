@@ -80,6 +80,7 @@ int main(int ac, char **av)
 	data.probes_per_hops = 3;
 	data.max_hops = 30;
 	data.list = NULL;
+	data.must_stop = 0;
 	ft_bzero(data.actual_dst, sizeof(data.actual_dst));
 	if ((data.array = malloc(sizeof(struct timeval) * data.probes_per_hops * data.max_hops)) == 0)
 	{

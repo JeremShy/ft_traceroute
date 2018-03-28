@@ -3,6 +3,7 @@
 int	init_icmp_socket(t_data *data)
 {
 	struct addrinfo hints;
+	struct	in_addr source;
 
 	ft_bzero(&hints, sizeof(struct addrinfo));
 	hints.ai_flags = AI_CANONNAME;
@@ -19,19 +20,14 @@ int	init_icmp_socket(t_data *data)
 
 	if (data->res->ai_family == AF_INET)
 	{
-		if (inet_ntop(data->res->ai_family, &((struct sockaddr_in*)(data->res->ai_addr))->sin_addr, data->rp, sizeof(data->rp)) == 0)
-		{
-			dprintf(2, "inet_ntop failed.\n");
-			return (0);
-		}
+		source = ((struct sockaddr_in*)(data->res->ai_addr))->sin_addr;
+		char *res = inet_ntoa(source);
+		ft_strncpy(data->rp, res, 19);
 	}
 	else if (data->res->ai_family == AF_INET6)
 	{
-		if (inet_ntop(data->res->ai_family, &((struct sockaddr_in6*)(data->res->ai_addr))->sin6_addr, data->rp, sizeof(data->rp)) == 0)
-		{
-			dprintf(2, "inet_ntop failed.\n");
-			return (0);
-		}
+		dprintf(2, "IPV6 not supported.\n");
+		exit(-1);
 	}
 	setsockopt(data->sock, IPPROTO_IP, IP_TTL, &data->ttl, sizeof(data->ttl));
 	return (1);
@@ -41,6 +37,7 @@ int	init_icmp_socket(t_data *data)
 int	init_udp_socket(t_data *data)
 {
 	struct addrinfo hints;
+	struct	in_addr source;
 
 	ft_bzero(&hints, sizeof(struct addrinfo));
 	hints.ai_flags = AI_CANONNAME;
@@ -56,19 +53,15 @@ int	init_udp_socket(t_data *data)
 
 	if (data->res->ai_family == AF_INET)
 	{
-		if (inet_ntop(data->res->ai_family, &((struct sockaddr_in*)(data->res->ai_addr))->sin_addr, data->rp, sizeof(data->rp)) == 0)
-		{
-			dprintf(2, "inet_ntop failed.\n");
-			return (0);
-		}
+		source = ((struct sockaddr_in*)(data->res->ai_addr))->sin_addr;
+		char *res = inet_ntoa(source);
+		ft_strncpy(data->rp, res, 19);
+
 	}
 	else if (data->res->ai_family == AF_INET6)
 	{
-		if (inet_ntop(data->res->ai_family, &((struct sockaddr_in6*)(data->res->ai_addr))->sin6_addr, data->rp, sizeof(data->rp)) == 0)
-		{
-			dprintf(2, "inet_ntop failed.\n");
-			return (0);
-		}
+		dprintf(2, "IPV6 not supported.\n");
+		exit(-1);
 	}
 	return (1);
 }

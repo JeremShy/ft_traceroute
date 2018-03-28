@@ -1,6 +1,7 @@
 {
 	"C_Cpp.errorSquiggles": "Disabled",
 	"files.associations": {
-		"ft_traceroute.h": "c"
+		"ft_traceroute.h": "c",
+		"errno.h": "c"
 	}
 }
