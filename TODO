@@ -1,0 +1,2 @@
+inet_ntop -> pas le droit
+meme chose pour les perror et pour des puts mystique (surement a cause de printf)
