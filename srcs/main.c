@@ -73,13 +73,14 @@ int main(int ac, char **av)
 		dprintf(2, "%s: You need to be root in order to use this program.\n", av[0]);
 		return (2);
 	}
-	printf("Protocol : %d\n", data.probe_type);
 	data.pid = getpid();
 	data.av = av;
 	data.ttl = 1;
 	data.seq = 0;
 	data.probes_per_hops = 3;
 	data.max_hops = 30;
+	data.list = NULL;
+	ft_bzero(data.actual_dst, sizeof(data.actual_dst));
 	if ((data.array = malloc(sizeof(struct timeval) * data.probes_per_hops * data.max_hops)) == 0)
 	{
 		printf("Error while trying to allocate room for an array.\n");

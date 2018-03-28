@@ -3,7 +3,8 @@ SRC_NAME = main.c \
 			network.c \
 			debug.c \
 			icmp.c \
-			udp.c
+			udp.c \
+			time_list.c
 
 OBJ_PATH = ./obj/
 

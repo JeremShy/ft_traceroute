@@ -40,7 +40,7 @@ void	receive_icmp_packet(t_data *data)
 	int r = recvmsg(data->recv_sock, &msghdr, 0);
 	if (r == -1)
 	{
-		printf("*\n");
+		add_tl(&(data->list), create_tl(0.0f, 1));
 		return ;
 	}
 	gettimeofday(&recvtime, NULL);
@@ -73,20 +73,29 @@ void	do_traceroute(t_data *data)
 	struct timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = 50000;
-	setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+	if (setsockopt(data->recv_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval)) == -1)
+	{
+		perror("");
+	}
+	if (setsockopt(data->sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval)) == -1)
+	{
+		perror("");
+	}
 
 	ttl = 1;
 	while (ttl <= data->max_hops)
-	// while (ttl <= 2)
 	{
 		i = 0;
 		while (i < data->probes_per_hops)
-		// while (i < 1)
 		{
 			probe(data, ttl);
 			receive_icmp_packet(data);
 			i++;
 		}
+		print_time_list(data, data->list, ttl);
+		free_tl(data->list);
+		data->list = NULL;
+		ft_bzero(data->actual_dst, sizeof(data->actual_dst));
 		ttl++;
 	}
 }

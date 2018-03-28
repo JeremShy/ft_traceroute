@@ -9,6 +9,7 @@ int	init_icmp_socket(t_data *data)
 	data->recv_sock = socket(AF_INET, SOCK_RAW, 1); // proto ICMP : 1
 	if (data->probe_type == PROBE_TYPE_ICMP)
 		data->sock = data->recv_sock;
+	
 
 	if ((getaddrinfo(data->rhost, NULL, &hints, &(data->res)) != 0) || !(data->res))
 	{

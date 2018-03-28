@@ -17,6 +17,12 @@
 
 # define PROBE_TYPE_DEFAULT	PROBE_TYPE_UDP
 
+typedef struct	s_time_list {
+	float				time;
+	int8_t				is_star;
+	struct s_time_list	*next;
+}				t_time_list;
+
 typedef struct	s_data
 {
 	pid_t			pid;
@@ -27,11 +33,13 @@ typedef struct	s_data
 	uint8_t			ttl;
 	uint16_t		seq;
 	char			rp[20];
+	char			actual_dst[20];
 	char			**av;
 	int8_t			probe_type;
 	int8_t			probes_per_hops;
 	int8_t			max_hops;
 	struct timeval	*array;
+	t_time_list		*list;
 }				t_data;
 
 int		init_socket(t_data *data);
@@ -49,5 +57,9 @@ void	send_icmp_packet(t_data *data, uint8_t	ttl);
 
 void	send_udp_packet(t_data *data, uint8_t ttl);
 
+t_time_list		*create_tl(float time, int8_t is_star);
+void			add_tl(t_time_list **list, t_time_list *node);
+void			free_tl(t_time_list *list);
+void			print_time_list(t_data *data, t_time_list *list, int ttl);
 
 #endif
